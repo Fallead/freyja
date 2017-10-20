@@ -31,3 +31,5 @@ venv
 *.retry
 
 static_collected
+
+*.sqlite3
