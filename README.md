@@ -1,2 +1,3 @@
 # freyja
 django-project
+test
