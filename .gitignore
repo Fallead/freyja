@@ -1,0 +1,33 @@
+*.py[cod]
+*.swp
+*.bak
+*.coverage
+*.log
+local_settings.*
+.venv
+venv
+
+#env
+/env
+
+# win
+.idea
+
+# mac
+.DS_Store
+
+# eclipse
+.project
+/.settings
+
+#upload
+static/upload
+
+# virtualenv
+.venv
+venv
+
+# ansible
+*.retry
+
+static_collected
