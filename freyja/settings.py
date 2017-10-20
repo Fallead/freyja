@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
+import logging
+import logging.config
+from utils.log_filters import skip_illegal_level, get_level
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -66,6 +70,14 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'utils.jinja2.environment',
+        },
+    },
 ]
 
 WSGI_APPLICATION = 'freyja.wsgi.application'
@@ -95,8 +107,112 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# this must before log setting
+# local_settings should contains like: LOG_DIRECTORY = '/Users/***/Desktop/project/log/freyja/'
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
+LOGGING_CONFIG = None
+LOG_INFO = 'info.log'
+LOG_WARNING = 'warning.log'
+LOG_ERROR = 'error.log'
+LOG_CRITICAL = 'critical.log'
+CUSTOM_LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'file_info': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIRECTORY + LOG_INFO,
+            'formatter': 'verbose',
+            'filters': ['info_level'],
+            'maxBytes': 1024 * 1024 * 500,
+            'backupCount': 10
+        },
+        'file_warning': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIRECTORY + LOG_WARNING,
+            'formatter': 'verbose',
+            'filters': ['warning_level'],
+            'maxBytes': 1024 * 1024 * 500,
+            'backupCount': 10
+        },
+        'file_error': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIRECTORY + LOG_ERROR,
+            'formatter': 'verbose',
+            'filters': ['error_level'],
+            'maxBytes': 1024 * 1024 * 500,
+            'backupCount': 10
+        },
+        'file_critical': {
+            'level': 'CRITICAL',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIRECTORY + LOG_CRITICAL,
+            'formatter': 'verbose',
+            'filters': ['critical_level'],
+            'maxBytes': 1024 * 1024 * 500,
+
+        },
+        'console_info': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+            'stream': sys.stdout,
+            'filters': ['skip_illegal_info_level'],
+        },
+        'console_error': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'filters': {
+        'skip_illegal_info_level': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': skip_illegal_level(logging.DEBUG, logging.WARNING),
+        },
+        'info_level': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': get_level(logging.INFO),
+        },
+        'warning_level': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': get_level(logging.WARNING),
+        },
+        'error_level': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': get_level(logging.ERROR),
+        },
+        'critical_level': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': get_level(logging.CRITICAL),
+        },
+    },
+    'loggers': {
+        '': {
+            'level': 'INFO',
+            'handlers': ['console_info', 'console_error', 'file_info', 'file_warning', 'file_error', 'file_critical'],
+        },
+    }
+}
+
+logging.config.dictConfig(CUSTOM_LOGGING)
+
