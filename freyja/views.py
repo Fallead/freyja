@@ -2,14 +2,36 @@
 import logging
 
 from django.views.generic import TemplateView
+from django.http import HttpResponse
+
+from utils.permissionmixin import PermissionMixin
 
 logger = logging.getLogger(__name__)
 
 
-class IndexView(TemplateView):
-    template_name='index.html'
+def login(request):
+    pass
 
-    def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
-        logger.warning('test')
-        return context
+
+def logout(request):
+    pass
+
+
+def signup(request):
+    pass
+
+
+def forget(request):
+    pass
+
+
+def reset_password(request):
+    pass
+
+
+class IndexView(TemplateView):
+    template_name = 'index.html'
+
+
+class AboutView(PermissionMixin, TemplateView):
+    template_name = 'about.html'

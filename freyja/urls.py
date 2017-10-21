@@ -16,10 +16,16 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from freyja.views import IndexView
+import freyja.views as core_views
 
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^index', IndexView.as_view())
+    url(r'^$', core_views.IndexView.as_view(), name='index'),
+    url(r'^about$', core_views.AboutView.as_view(), name='about'),
+    url(r'^signup$', core_views.signup, name='signup'),
+    url(r'^login$', core_views.login, name='login'),  
+    url(r'^logout$', core_views.logout, name='logout'),
+    url(r'^forget$', core_views.forget, name='forget'),
+    url(r'^reset_password$', core_views.reset_password, name='reset_password'),
 ]
