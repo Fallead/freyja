@@ -1,0 +1,12 @@
+<center>
+    {% if errors %}
+        username or password invalid!!
+        try again, please.
+    {% endif %}
+    <form action="{{reverse('login')}}" method="POST">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        username:<input type="text" name="username">
+        password:<input type="password" name="password">
+        <input type="submit" value="login">
+    </form>
+</center>

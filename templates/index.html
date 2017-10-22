@@ -1,3 +1,9 @@
 <center>
     <h1>Hello, World</h1>
 </center>
+{% if request.user.is_authenticated() %}
+    <a href="{{reverse('logout')}}">logout, {{request.user.username}}</a>
+{% else %}
+    <a href="{{reverse('login')}}">login</a>
+    <a href="{{reverse('signup')}}">signup</a>
+{% endif %}
