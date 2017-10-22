@@ -13,18 +13,23 @@ logger = logging.getLogger(__name__)
 
 
 def login(request):
+    # if user already login, redirect to index
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
+
+    # process POST request
     if request.method == 'POST':
         user = authenticate(
             username=request.POST['username'],
             password=request.POST['password']
         )
         if user and user.is_active:
+            # core
             auth_login(request, user)
             return HttpResponseRedirect(reverse('index'))
         else:
             return render(request, template_name, {'errors': True})
+    # process GET request
     else:
         return render(request, 'login.html')
 
@@ -37,6 +42,7 @@ def logout(request):
 def signup(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
+
     if request.method == 'POST':
         print request.POST.get('username')
         print request.POST.get('email')
